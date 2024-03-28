@@ -25,5 +25,8 @@ typedef struct s_line
 	int	now;
 }		t_line;
 
+int	ft_strlen(const char *str);
+char	*ft_strndup(const char *source, int n);
+char	*ft_strjoin(char const *s1, char const *s2);
 
 #endif

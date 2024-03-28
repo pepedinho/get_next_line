@@ -13,68 +13,7 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-int	ft_strlen(const char *str)
-{
-	int	i;
-	
-	if (!str)
-		return (0);
-	i = 0;
-	while (str[i])
-		i++;
-	return (i);
-}
 
-/*Duplique la chaine source dans une nouvelle chaine jusqu'au caractère n*/
-char	*ft_strndup(const char *source, int n)
-{
-	char	*result;
-	int		i;
-
-	i = 0;
-	result = malloc(sizeof(char) * n + 1);
-	if (!result)
-		return (NULL);
-	while (i < n && source[i])
-	{
-		result[i] = source[i];
-		i++;
-	}
-	result[i] = '\0';
-	return(result);
-}
-
-/*Ajoute s2 a la suite de s1 et assigne la chaine concaténer a s1*/
-char	*ft_strjoin(char const *s1, char const *s2)
-{
-	char	*result;
-	size_t	i;
-	size_t	j;
-
-	result = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) +1));
-	if (!result)
-		return (NULL);
-	i = 0;
-	j = 0;
-	if (s1)
-	{
-		while (s1[i])
-		{
-			result[i] = s1[i];
-			i++;
-		}
-	}
-	while (s2[j])
-	{
-		result[i] = s2[j];
-		i++;
-		j++;
-	}
-	result[i] = '\0';
-	free((char *)s1);
-	//s1 = result;
-	return (result);
-}
 
 /*Verifie si stash contien un '\n'*/
 int	check_stash(char *stash)
@@ -126,46 +65,43 @@ char	*format_stash(char *stash)
 		stash[i] = '\0';
 		i++;
 	}
-	i++;
-	stash[i] = '\0';
+	//i++;
+	if (stash[i])
+		stash[i] = '\0';
 	
 	return (result);
-}
-
-char	*ft_strnew()
-{
-	char	*str;
-
-	str = malloc(sizeof(char) * 1);
-	if (!str)
-		return(NULL);
-	str[0] = '\0';
-	return(str);
 }
 
 char	*get_next_line(int fd)
 {
 	static char			*result;
-	static int			init;
 	char				*final_result;
 	char			buff[BUFFER_SIZE];
 	int				nb_read;
 
-	 if (!result)
-	 	result = ft_strnew();
+	// if (!result)
+	// 	result = ft_strnew();
 	// 	printf("open function result : %s \n", result);
 	nb_read = -1;
 	while (nb_read != 0)
 	{
 		nb_read = read(fd, buff, BUFFER_SIZE);
+		if (nb_read == (-1) && result)
+				break ;
 		result = ft_strjoin(result, buff);
-		// printf("strjoin : %s \n", result);
 		if (!result)
+		{
+			free(result);
+			printf("HOLALALAALLALAALALALALA\n");
 			return (NULL);
+		}
+		// printf("strjoin : %s \n", result);
 		//printf("nb_read = %d | buffer_size = %d \n", nb_read, BUFFER_SIZE);
 		if (nb_read < BUFFER_SIZE)
 		{
 			final_result = format_stash(result);
+			if(!final_result)
+				return (NULL);
 			free(result);
 			return (final_result);
 		}
@@ -186,6 +122,8 @@ int main ()
 	while (i < 30)
 	{
 		char *line = get_next_line(fd);
+		if (!line)
+			break ; 
 		if (line)
 		{
 			printf("%s", line);
