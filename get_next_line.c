@@ -86,7 +86,7 @@ char	*get_next_line(int fd)
 	while (nb_read != 0)
 	{
 		nb_read = read(fd, buff, BUFFER_SIZE);
-		if (nb_read == (-1) && result)
+		if (nb_read == (0))
 				break ;
 		result = ft_strjoin(result, buff);
 		if (!result)
@@ -100,15 +100,16 @@ char	*get_next_line(int fd)
 		if (nb_read < BUFFER_SIZE)
 		{
 			final_result = format_stash(result);
+			free(result);
 			if(!final_result)
 				return (NULL);
-			free(result);
 			return (final_result);
 		}
 		if (check_stash(result))
 			return (format_stash(result));
 	}
-	free(result);
+	if (nb_read != 0)
+		free(result);
 	return (NULL);
 }
 
@@ -123,9 +124,14 @@ int main ()
 	{
 		char *line = get_next_line(fd);
 		if (!line)
-			break ; 
-		if (line)
 		{
+			//printf("[line %d]\n", i + 1);
+			free(line);
+			break ; 
+		}
+		else if (line)
+		{
+			//printf("[line %d]\n", i + 1);
 			printf("%s", line);
 			free(line);
 		}
