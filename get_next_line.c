@@ -71,7 +71,8 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		j++;
 	}
 	result[i] = '\0';
-	s1 = result;
+	free((char *)s1);
+	//s1 = result;
 	return (result);
 }
 
@@ -127,17 +128,32 @@ char	*format_stash(char *stash)
 	}
 	i++;
 	stash[i] = '\0';
+	
 	return (result);
+}
+
+char	*ft_strnew()
+{
+	char	*str;
+
+	str = malloc(sizeof(char) * 1);
+	if (!str)
+		return(NULL);
+	str[0] = '\0';
+	return(str);
 }
 
 char	*get_next_line(int fd)
 {
 	static char			*result;
+	static int			init;
+	char				*final_result;
 	char			buff[BUFFER_SIZE];
 	int				nb_read;
-	// if (result)
-	// 	printf("open function result : %s \n", result);
 
+	 if (!result)
+	 	result = ft_strnew();
+	// 	printf("open function result : %s \n", result);
 	nb_read = -1;
 	while (nb_read != 0)
 	{
@@ -146,8 +162,13 @@ char	*get_next_line(int fd)
 		// printf("strjoin : %s \n", result);
 		if (!result)
 			return (NULL);
+		//printf("nb_read = %d | buffer_size = %d \n", nb_read, BUFFER_SIZE);
 		if (nb_read < BUFFER_SIZE)
-			return (format_stash(result));
+		{
+			final_result = format_stash(result);
+			free(result);
+			return (final_result);
+		}
 		if (check_stash(result))
 			return (format_stash(result));
 	}
@@ -162,7 +183,7 @@ int main ()
 	int	fd;
 
 	fd = open("tests/test.txt", O_RDONLY);
-	while (i < 5)
+	while (i < 30)
 	{
 		char *line = get_next_line(fd);
 		if (line)
