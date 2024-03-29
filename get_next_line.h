@@ -10,14 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-# ifndef GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
-//# define BUFFER_SIZE 20
-#include <stdlib.h>
-#include <unistd.h>
 
-# define COUNT count.prec ? count.prec : count.now
-
+# include <stdlib.h>
+# include <unistd.h>
 
 typedef struct s_index
 {
@@ -25,7 +22,7 @@ typedef struct s_index
 	size_t	j;
 }		t_index;
 
-int	ft_strlen(const char *str);
+int		ft_strlen(const char *str);
 char	*ft_strndup(const char *source, int n);
 char	*ft_strjoin(char const *s1, char const *s2);
 void	*ft_calloc(size_t nmeb, size_t size);
