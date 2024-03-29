@@ -28,5 +28,6 @@ typedef struct s_line
 int	ft_strlen(const char *str);
 char	*ft_strndup(const char *source, int n);
 char	*ft_strjoin(char const *s1, char const *s2);
+void	*ft_calloc(size_t nmeb, size_t size);
 
 #endif

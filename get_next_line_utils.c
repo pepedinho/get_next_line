@@ -50,9 +50,12 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	size_t	i;
 	size_t	j;
 
-	result = malloc(sizeof(char) * (ft_strlen(s1) + (BUFFER_SIZE +1)));
+	result = malloc(sizeof(char) * (ft_strlen(s1) + (ft_strlen(s2) +1)));
 	if (!result)
+	{
+		free((char *)s2);
 		return (NULL);
+	}
 	i = 0;
 	j = 0;
 	if (s1)
@@ -72,6 +75,26 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	result[i] = '\0';
 	
 	free((char *)s1);
+	free((char *)s2);
 	//s1 = result;
 	return (result);
+}
+
+void	*ft_calloc(size_t nmeb, size_t size)
+{
+	char	*ptr;
+	size_t	i;
+
+	ptr = malloc(size * nmeb);
+	if (ptr == NULL)
+		return (NULL);
+	if (nmeb == 0 || size == 0)
+		return (NULL);
+	i = 0;
+	while (i < nmeb * size)
+	{
+		ptr[i] = '\0';
+		i++;
+	}
+	return ((void *)ptr);
 }

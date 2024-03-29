@@ -51,11 +51,9 @@ char	*format_stash(char *stash)
 		return (NULL);
 	
 	len = ft_strlen(stash);
-	// printf("len > %d | i > %d\n", len, i);
 	while(i < len)
 	{
 		stash[j] = stash[i];
-		// printf("debug  : [%c]\n", stash[i]);
 		i++;
 		j++;
 	}
@@ -65,51 +63,85 @@ char	*format_stash(char *stash)
 		stash[i] = '\0';
 		i++;
 	}
-	//i++;
 	if (stash[i])
 		stash[i] = '\0';
 	
 	return (result);
 }
 
+char	*give_me_this_line(char *stash, char *buff, int cases)
+{
+	char 	*line;
+	if (cases ==  1)
+	{
+		line = format_stash(stash);
+		if (!line)
+		{
+			free(stash);
+			return (NULL);
+		}
+		return (line);
+	}
+	else
+	{
+		line = format_stash(stash);
+		if (!line)
+			return (NULL);
+		if (buff)
+			free(buff);
+		free(stash);
+		return (line);
+	}
+}
+
 char	*get_next_line(int fd)
 {
-	static char			*result;
-	char				*final_result;
-	char			buff[BUFFER_SIZE];
+	static char		*result;
+	char			*final_result;
+	char			*buff;
 	int				nb_read;
 
-	// if (!result)
-	// 	result = ft_strnew();
-	// 	printf("open function result : %s \n", result);
 	nb_read = -1;
 	while (nb_read != 0)
 	{
+		buff = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+		if (!buff)
+			return (NULL);
 		nb_read = read(fd, buff, BUFFER_SIZE);
-		if (nb_read == (0))
-				break ;
+		if (nb_read == 0 && !check_stash(result))
+		{
+			free(buff);
+			break ;
+		}
 		result = ft_strjoin(result, buff);
 		if (!result)
 		{
+			free(buff);
 			free(result);
-			printf("HOLALALAALLALAALALALALA\n");
 			return (NULL);
 		}
-		// printf("strjoin : %s \n", result);
-		//printf("nb_read = %d | buffer_size = %d \n", nb_read, BUFFER_SIZE);
-		if (nb_read < BUFFER_SIZE)
+		if (check_stash(result))
 		{
-			final_result = format_stash(result);
-			free(result);
-			if(!final_result)
+			final_result = give_me_this_line(result, buff, 1);
+			if (!final_result)
 				return (NULL);
 			return (final_result);
 		}
-		if (check_stash(result))
-			return (format_stash(result));
+		else if (nb_read < BUFFER_SIZE && check_stash(result))
+		{
+			final_result = give_me_this_line(result, buff, 1);
+			if (final_result)
+				return (NULL);
+			return (final_result);
+		}
+		else if (nb_read < BUFFER_SIZE && !check_stash(result))
+		{
+			final_result = give_me_this_line(result, buff, 2);
+			if (!final_result)
+				return (NULL);
+			return (final_result);
+		}
 	}
-	if (nb_read != 0)
-		free(result);
 	return (NULL);
 }
 
@@ -118,20 +150,18 @@ int main ()
 {
 	int i = 0;
 	int	fd;
+	char *line;
 
 	fd = open("tests/test.txt", O_RDONLY);
-	while (i < 30)
+	while ((line = get_next_line(fd)) != NULL)
 	{
-		char *line = get_next_line(fd);
 		if (!line)
 		{
-			//printf("[line %d]\n", i + 1);
 			free(line);
 			break ; 
 		}
-		else if (line)
+		else
 		{
-			//printf("[line %d]\n", i + 1);
 			printf("%s", line);
 			free(line);
 		}
