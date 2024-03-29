@@ -111,6 +111,7 @@ char	*get_next_line(int fd)
 		if (nb_read == 0 && !check_stash(result))
 		{
 			free(buff);
+			free(result);
 			break ;
 		}
 		result = ft_strjoin(result, buff);
@@ -167,5 +168,6 @@ int main ()
 		}
 		i++;
 	}
+
 	close(fd);
 }
