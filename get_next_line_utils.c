@@ -15,7 +15,7 @@
 int	ft_strlen(const char *str)
 {
 	int	i;
-	
+
 	if (!str)
 		return (0);
 	i = 0;
@@ -40,15 +40,14 @@ char	*ft_strndup(const char *source, int n)
 		i++;
 	}
 	result[i] = '\0';
-	return(result);
+	return (result);
 }
 
 /*Ajoute s2 a la suite de s1 et assigne la chaine concaténer a s1*/
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	char	*result;
-	size_t	i;
-	size_t	j;
+	t_index	index;
 
 	result = malloc(sizeof(char) * (ft_strlen(s1) + (ft_strlen(s2) +1)));
 	if (!result)
@@ -56,27 +55,21 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		free((char *)s2);
 		return (NULL);
 	}
-	i = 0;
-	j = 0;
+	index.i = 0;
+	index.j = 0;
 	if (s1)
 	{
-		while (s1[i])
+		while (s1[index.i])
 		{
-			result[i] = s1[i];
-			i++;
+			result[index.i] = s1[index.i];
+			index.i++;
 		}
 	}
-	while (j < BUFFER_SIZE && s2[j])
-	{
-		result[i] = s2[j];
-		i++;
-		j++;
-	}
-	result[i] = '\0';
-	
+	while (index.j < BUFFER_SIZE && s2[index.j])
+		result[index.i++] = s2[index.j++];
+	result[index.i] = '\0';
 	free((char *)s1);
 	free((char *)s2);
-	//s1 = result;
 	return (result);
 }
 
@@ -97,4 +90,10 @@ void	*ft_calloc(size_t nmeb, size_t size)
 		i++;
 	}
 	return ((void *)ptr);
+}
+
+void	free_this(char *result, char *buff)
+{
+	free(result);
+	free(buff);
 }
