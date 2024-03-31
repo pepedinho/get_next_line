@@ -26,8 +26,8 @@ static int	check_stash(char *stash)
 			return (1);
 		i++;
 	}
-	if (i > 1)
-		return (1);
+	//if (i > 1 && !stash[i])
+	//	return (1);
 	return (0);
 }
 
@@ -51,9 +51,12 @@ char	*format_stash(char *stash)
 	if (!result)
 		return (NULL);
 	len = ft_strlen(stash);
-	while (i < len)
-		stash[j++] = stash[i++];
-	i = j;
+	if (i < len)
+	{
+		while (i < len)
+			stash[j++] = stash[i++];
+		i = j;
+	}
 	while (stash[i] != '\n' && stash[i])
 	{
 		stash[i] = '\0';
@@ -185,6 +188,9 @@ int main()
 	i = 0;
 	while (i < 3)
 	{
+		if ((line = get_next_line(fd1)) != NULL)
+			printf("[FILE 1]%s \n", line);
+		free(line);
 		if ((line = get_next_line(fd1)) != NULL)
 			printf("[FILE 1]%s \n", line);
 		free(line);

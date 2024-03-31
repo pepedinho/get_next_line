@@ -16,6 +16,8 @@
 # include <stdlib.h>
 # include <unistd.h>
 
+//# define BUFFER_SIZE 10
+
 typedef struct s_file
 {
 	int		fd;
