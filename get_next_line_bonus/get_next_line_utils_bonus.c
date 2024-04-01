@@ -147,6 +147,7 @@ void	ft_lstadd_back(t_file **lst, t_file *new)
 		*lst = new;
 		return ;
 	}
+	
 	new->first = current->first;
 	last_elem = ft_lstlast(*lst);
 	last_elem->next = new;

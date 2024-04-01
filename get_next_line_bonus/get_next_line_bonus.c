@@ -115,17 +115,17 @@ static char	*monitoring(t_file *stash, char *buff, int nb_read)
 	return (NULL);
 }
 
-t_file		*check_in_list(t_file **lst, int fd)
+t_file		*check_in_list(t_file *lst, int fd)
 {
-	t_file	*current;
 
-	current = *lst;
-	while(current)
+	t_file *first = lst->first;
+	while(lst)
 	{
-		if(current->fd == fd)
-			return(current);
-		current = current->next;
+		if(lst->fd == fd)
+			return(lst);
+		lst = lst->next;
 	}
+	lst = first;
 	return (NULL);
 }
 
@@ -136,13 +136,21 @@ char	*get_next_line(int fd)
 	char			*buff;
 	char			*final_result;
 
-	if (check_in_list(&file_lst, fd))
+	if (!file_lst)
 	{
-		file_lst = check_in_list(&file_lst, fd);
+		file_lst = ft_lstnew(fd);
 		file_lst->first = file_lst;
 	}
-	else
+	if (check_in_list(file_lst->first, fd))
+	{
+		file_lst = check_in_list(file_lst->first, fd);
+		file_lst->first = file_lst;
+	}
+	else if (!check_in_list(file_lst->first, fd) && file_lst)
+	{
 		ft_lstadd_back(&file_lst, ft_lstnew(fd));
+		file_lst = check_in_list(file_lst->first, fd);
+	}
 	nb_read = -1;
 	while (nb_read != 0)
 	{
