@@ -16,13 +16,14 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-//# define BUFFER_SIZE 10
+# define BUFFER_SIZE 100
 
 typedef struct s_file
 {
 	int		fd;
 	char	*stash;
 	struct s_file	*next;
+	struct s_file	*first;
 }			t_file;
 
 typedef struct s_index
@@ -37,5 +38,6 @@ char	*ft_strjoin(char const *s1, char const *s2);
 t_file	*ft_lstnew(int fd);
 void	*ft_calloc(size_t nmeb, size_t size);
 void	ft_lstclear(t_file **lst, void (*del)(void *));
+void	ft_lstadd_back(t_file **lst, t_file *new);
 
 #endif

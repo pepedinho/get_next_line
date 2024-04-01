@@ -123,3 +123,32 @@ void	ft_lstclear(t_file **lst, void (*del)(void *))
 	}
 	*lst = NULL;
 }
+
+static	t_file	*ft_lstlast(t_file *lst_testlast)
+{
+	if (!lst_testlast)
+		return (NULL);
+	while (lst_testlast->next)
+	{
+		lst_testlast = lst_testlast->next;
+	}
+	return (lst_testlast);
+}
+
+void	ft_lstadd_back(t_file **lst, t_file *new)
+{
+	t_file	*last_elem;
+	t_file	*current;
+
+	current = *lst;
+
+	if (!*lst)
+	{
+		*lst = new;
+		return ;
+	}
+	new->first = current->first;
+	last_elem = ft_lstlast(*lst);
+	last_elem->next = new;
+	new->next = NULL;
+}

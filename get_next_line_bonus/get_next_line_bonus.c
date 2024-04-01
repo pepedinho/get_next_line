@@ -105,13 +105,6 @@ static char	*monitoring(t_file *stash, char *buff, int nb_read)
 			return (NULL);
 		return (final_result);
 	}
-	else if (nb_read < BUFFER_SIZE && check_stash(stash->stash))
-	{
-		final_result = give_me_this_line(stash->stash, buff, 1);
-		if (final_result)
-			return (NULL);
-		return (final_result);
-	}
 	else if (nb_read < BUFFER_SIZE && !check_stash(stash->stash))
 	{
 		final_result = give_me_this_line(stash->stash, buff, 2);
@@ -144,9 +137,12 @@ char	*get_next_line(int fd)
 	char			*final_result;
 
 	if (check_in_list(&file_lst, fd))
+	{
 		file_lst = check_in_list(&file_lst, fd);
+		file_lst->first = file_lst;
+	}
 	else
-		file_lst = ft_lstnew(fd);
+		ft_lstadd_back(&file_lst, ft_lstnew(fd));
 	nb_read = -1;
 	while (nb_read != 0)
 	{
@@ -158,6 +154,7 @@ char	*get_next_line(int fd)
 		{
 			free(buff);
 			ft_lstclear(&file_lst, free);
+			break ;
 		}
 		file_lst->stash = ft_strjoin(file_lst->stash, buff);
 		if (!file_lst->stash)
