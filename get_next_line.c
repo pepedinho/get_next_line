@@ -6,7 +6,7 @@
 /*   By: itahri <itahri@contact.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/26 15:25:49 by itahri            #+#    #+#             */
-/*   Updated: 2024/03/27 19:03:30 by itahri           ###   ########.fr       */
+/*   Updated: 2024/04/01 08:05:46 by itahri           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,7 @@ char	*get_next_line(int fd)
 	return (NULL);
 }
 
+/*
 
 #include <fcntl.h>
 int main ()
@@ -175,3 +176,5 @@ int main ()
 
 	close(fd);
 }
+
+*/
