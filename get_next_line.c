@@ -106,7 +106,7 @@ char	*monitoring(char *stash, char *buff, int nb_read)
 	else if (nb_read < BUFFER_SIZE && check_stash(stash))
 	{
 		final_result = give_me_this_line(stash, buff, 1);
-		if (final_result)
+		if (!final_result)
 			return (NULL);
 		return (final_result);
 	}
@@ -149,7 +149,6 @@ char	*get_next_line(int fd)
 	return (NULL);
 }
 
-/*
 
 #include <fcntl.h>
 int main ()
@@ -176,5 +175,3 @@ int main ()
 
 	close(fd);
 }
-
-*/
