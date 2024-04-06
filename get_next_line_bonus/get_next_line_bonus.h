@@ -16,7 +16,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 
-//# define BUFFER_SIZE 100
+# define BUFFER_SIZE 1
 
 typedef struct s_file
 {
@@ -39,5 +39,7 @@ t_file	*ft_lstnew(int fd);
 void	*ft_calloc(size_t nmeb, size_t size);
 void	ft_lstclear(t_file **lst, void (*del)(void *));
 void	ft_lstadd_back(t_file **lst, t_file *new);
+t_file	*ft_lstlast(t_file *lst_testlast);
+
 
 #endif

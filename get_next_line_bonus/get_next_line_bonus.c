@@ -12,171 +12,145 @@
 
 #include "get_next_line_bonus.h"
 
-/*Verifie si stash contien un '\n'*/
-static int	check_stash(char *stash)
+t_file	*give_me_element(t_file	*stash, int fd)
 {
-	size_t	i;
+	t_file	*current;
+	t_file	*first;
 
+	current = stash;
+
+	if (!current)
+	{
+		current = ft_lstnew(fd);
+		if (!current)
+			return (NULL);
+		current->first = current;
+		return (current);
+	}
+	else
+	{
+		first = current->first;
+		while(first)
+		{
+			if (first->fd == fd)
+				return first;// L'element existe
+			first = first->next;
+		}
+		//L'element n'existe pas
+			//creationd'un nouvel element asocier au fd recus en parametre 
+		first = ft_lstnew(fd);
+		first->first = current->first;
+		if (!first)
+			return(NULL);
+		ft_lstadd_back(&current, first);
+		return(ft_lstlast(current));
+	}
+	return(NULL);
+}
+
+int		check_stash(char *stash)
+{
+	int	i;
+	
 	if (!stash)
 		return (0);
 	i = 0;
-	while (stash[i])
+	while(stash[i])
 	{
 		if (stash[i] == '\n')
 			return (1);
 		i++;
 	}
-	//if (i > 1 && !stash[i])
-	//	return (1);
-	return (0);
+	return 0;
 }
 
-/*
-	retourne la chaine stash couper au premier '\n' 
-	et stock le reste de stash au debut de stash
-*/
-char	*format_stash(char *stash)
+char	*format_stash(char	*stash, int cas)
 {
 	int		i;
 	int		j;
-	int		len;
 	char	*result;
 
+	(void)cas;
 	i = 0;
-	j = 0;
 	while (stash[i] != '\n' && stash[i])
 		i++;
-	i++;
-	result = ft_strndup(stash, i);
+	if (stash[i])
+		i++;
+	result =ft_strndup(stash, i);
 	if (!result)
 		return (NULL);
-	len = ft_strlen(stash);
-	if (i < len)
+	
+	j = 0; //i + 1 = caractere juste apre le '\n'
+	if (!stash[i] && i > 0)
+		stash[j] = '\0';
+	else
 	{
-		while (i < len)
-			stash[j++] = stash[i++];
-		i = j;
+		while (stash[i])
+		{
+			stash[j++] = stash[i]; //fait passer les caracteres restant au debut de la chaine de caracatere
+			i++;
+		}
+		while (stash[j++])
+			stash[j] = '\0';
 	}
-	while (stash[i] != '\n' && stash[i])
-	{
-		stash[i] = '\0';
-		i++;
-	}
-	if (stash[i])
-		stash[i] = '\0';
 	return (result);
 }
 
-static char	*give_me_this_line(char *stash, char *buff, int cases)
+char	*give_me_the_line(t_file *file_infos)
 {
+	int		nb_read;
+	char	*buff;
 	char	*line;
 
-	if (cases == 1)
-	{
-		line = format_stash(stash);
-		if (!line)
-		{
-			free(stash);
-			stash = NULL;
-			return (NULL);
-		}
-		return (line);
-	}
-	else
-	{
-		line = format_stash(stash);
-		if (!line)
-			return (NULL);
-		if (buff)
-			free(buff);
-		free(stash);
-		return (line);
-	}
-}
-
-static char	*monitoring(t_file *stash, char *buff, int nb_read)
-{
-	char	*final_result;
-
-	if (check_stash(stash->stash))
-	{
-		final_result = give_me_this_line(stash->stash, buff, 1);
-		if (!final_result)
-			return (NULL);
-		return (final_result);
-	}
-	else if (nb_read < BUFFER_SIZE && !check_stash(stash->stash))
-	{
-		final_result = give_me_this_line(stash->stash, buff, 2);
-		if (!final_result)
-			return (NULL);
-		return (final_result);
-	}
-	return (NULL);
-}
-
-t_file		*check_in_list(t_file *lst, int fd)
-{
-
-	t_file *first = lst->first;
-	while(lst)
-	{
-		if(lst->fd == fd)
-			return(lst);
-		lst = lst->next;
-	}
-	lst = first;
-	return (NULL);
-}
-
-char	*get_next_line(int fd)
-{
-	static	t_file	*file_lst;
-	int				nb_read;
-	char			*buff;
-	char			*final_result;
-
-	if (!file_lst)
-	{
-		file_lst = ft_lstnew(fd);
-		file_lst->first = file_lst;
-	}
-	if (check_in_list(file_lst->first, fd))
-	{
-		file_lst = check_in_list(file_lst->first, fd);
-		file_lst->first = file_lst;
-	}
-	else if (!check_in_list(file_lst->first, fd) && file_lst)
-	{
-		ft_lstadd_back(&file_lst, ft_lstnew(fd));
-		file_lst = check_in_list(file_lst->first, fd);
-	}
 	nb_read = -1;
-	while (nb_read != 0)
+	while (nb_read != 0)	
 	{
 		buff = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 		if (!buff)
 			return (NULL);
-		nb_read = read(file_lst->fd, buff, BUFFER_SIZE);
-		if (nb_read == 0 && !check_stash(file_lst->stash))
+		nb_read = read(file_infos->fd, buff, BUFFER_SIZE);
+		if (nb_read == 0 && !check_stash(file_infos->stash))
+			return (NULL);
+		file_infos->stash = ft_strjoin(file_infos->stash, buff);
+		if (nb_read < BUFFER_SIZE && check_stash(file_infos->stash))
 		{
-			free(buff);
-			ft_lstclear(&file_lst, free);
+			line = format_stash(file_infos->stash, 1);
+			if (!line)
+				return (NULL);
 			break ;
 		}
-		file_lst->stash = ft_strjoin(file_lst->stash, buff);
-		if (!file_lst->stash)
-			return (NULL);
-		final_result = monitoring(file_lst, buff, nb_read);
-		if (final_result != NULL)
-			return (final_result);
+		else if (nb_read < BUFFER_SIZE && !check_stash(file_infos->stash))
+		{
+			line = format_stash(file_infos->stash, 1);
+			if (!line)
+				return (NULL);
+			break ;
+		}
+		else if (check_stash(file_infos->stash))
+		{
+			line = format_stash(file_infos->stash, 1);
+			if (!line)
+				return (NULL);
+			break ;
+		}
 	}
-	return (NULL);
+	return (line);	
 }
 
-#include <stdio.h>
-#include <fcntl.h>
+char	*get_next_line(int fd)
+{
+	static t_file	*file_infos;
+	char			*line;
+		
+	file_infos = give_me_element(file_infos, fd);
+	line = give_me_the_line(file_infos);
+	if (!line)
+		return (NULL);
+	return (line);
+}
 
+#include <fcntl.h>
+#include <stdio.h>
 
 int main()
 {
@@ -195,16 +169,20 @@ int main()
 	{
 		if ((line = get_next_line(fd1)) != NULL)
 			printf("[FILE 1]%s \n", line);
-		free(line);
+		if (line)
+			free(line);
 		if ((line = get_next_line(fd1)) != NULL)
 			printf("[FILE 1]%s \n", line);
-		free(line);
+		if (line)
+			free(line);
 		if ((line = get_next_line(fd2)) != NULL)
 			printf("[FILE 2]%s \n", line);
-		free(line);
+		if (line)
+			free(line);
 		if ((line = get_next_line(fd3)) != NULL)
 			printf("[FILE 3]%s \n", line);
-		free(line);
+		if (line)
+			free(line);
 		i++;
 	}
 }

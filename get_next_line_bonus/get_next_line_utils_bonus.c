@@ -12,19 +12,6 @@
 
 #include "get_next_line_bonus.h"
 
-t_file	*ft_lstnew(int fd)
-{
-	t_file	*n_element;
-
-	n_element = malloc(sizeof(t_file));
-	if (!n_element)
-		return (NULL);
-	n_element->fd = fd;
-	n_element->stash = NULL;
-	n_element->next = NULL;
-	return (n_element);
-}
-
 
 /*Duplique la chaine source dans une nouvelle chaine jusqu'au caractère n*/
 char	*ft_strndup(const char *source, int n)
@@ -106,6 +93,21 @@ void	*ft_calloc(size_t nmeb, size_t size)
 	return ((void *)ptr);
 }
 
+t_file	*ft_lstnew(int fd)
+{
+	t_file	*n_element;
+
+	n_element = malloc(sizeof(t_file));
+	if (!n_element)
+		return (NULL);
+	n_element->fd = fd;
+	n_element->stash = NULL;
+	n_element->next = NULL;
+	return (n_element);
+}
+
+
+
 void	ft_lstclear(t_file **lst, void (*del)(void *))
 {
 	t_file	*current;
@@ -124,7 +126,7 @@ void	ft_lstclear(t_file **lst, void (*del)(void *))
 	*lst = NULL;
 }
 
-static	t_file	*ft_lstlast(t_file *lst_testlast)
+t_file	*ft_lstlast(t_file *lst_testlast)
 {
 	if (!lst_testlast)
 		return (NULL);
