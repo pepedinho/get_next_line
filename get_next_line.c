@@ -18,17 +18,13 @@ int	check_stash(char *stash)
 {
 	size_t	i;
 
-	if (!stash)
-		return (0);
 	i = 0;
-	while (stash[i])
+	while (stash[i] && stash)
 	{
 		if (stash[i] == '\n')
 			return (1);
 		i++;
 	}
-	if (i > 1)
-		return (1);
 	return (0);
 }
 
@@ -65,7 +61,7 @@ char	*format_stash(char *stash)
 	return (result);
 }
 
-char	*give_me_this_line(char *stash, char *buff, int cases)
+char	*give_me_this_line(char *stash, int cases)
 {
 	char	*line;
 
@@ -83,38 +79,36 @@ char	*give_me_this_line(char *stash, char *buff, int cases)
 	else
 	{
 		line = format_stash(stash);
-		if (!line)
+		if (!line || !line[0])
+		{
+			free(line);
 			return (NULL);
-		if (buff)
-			free(buff);
-		free(stash);
+		}
 		return (line);
 	}
 }
 
-char	*monitoring(char *stash, char *buff, int nb_read)
+char	*monitoring(char **stash, int nb_read)
 {
 	char	*final_result;
 
-	if (check_stash(stash))
+	if (check_stash(*stash))
 	{
-		final_result = give_me_this_line(stash, buff, 1);
+		final_result = give_me_this_line(*stash, 1);
 		if (!final_result)
 			return (NULL);
 		return (final_result);
 	}
-	else if (nb_read < BUFFER_SIZE && check_stash(stash))
+	else if (nb_read < BUFFER_SIZE && check_stash(*stash))
 	{
-		final_result = give_me_this_line(stash, buff, 1);
-		if (!final_result)
-			return (NULL);
+		final_result = give_me_this_line(*stash, 1);
 		return (final_result);
 	}
-	else if (nb_read < BUFFER_SIZE && !check_stash(stash))
+	else if (nb_read < BUFFER_SIZE && !check_stash(*stash))
 	{
-		final_result = give_me_this_line(stash, buff, 2);
-		if (!final_result)
-			return (NULL);
+		final_result = give_me_this_line(*stash, 2);
+		free(*stash);
+		*stash = NULL;
 		return (final_result);
 	}
 	return (NULL);
@@ -127,6 +121,8 @@ char	*get_next_line(int fd)
 	char			*buff;
 	int				nb_read;
 
+	if (fd < 0)
+		return (NULL);
 	nb_read = -1;
 	while (nb_read != 0)
 	{
@@ -134,15 +130,12 @@ char	*get_next_line(int fd)
 		if (!buff)
 			return (NULL);
 		nb_read = read(fd, buff, BUFFER_SIZE);
-		if (nb_read == 0 && !check_stash(result))
-		{
-			free_this(result, buff);
-			break ;
-		}
+		if (nb_read == -1 || (nb_read == 0 && !result))
+			return (free(buff), NULL);
 		result = ft_strjoin(result, buff);
 		if (!result)
 			return (NULL);
-		final_result = monitoring(result, buff, nb_read);
+		final_result = monitoring(&result, nb_read);
 		if (final_result != NULL)
 			return (final_result);
 	}
@@ -150,31 +143,53 @@ char	*get_next_line(int fd)
 }
 
 /*
-
 #include <fcntl.h>
-int main ()
+int    main(void)
 {
-	int i = 0;
-	int	fd;
-	char *line;
+    int fd;
+    char *line;
 
-	fd = open("tests/test.txt", O_RDONLY);
-	while ((line = get_next_line(fd)) != NULL)
-	{
-		if (!line)
-		{
-			free(line);
-			break ; 
-		}
-		else
-		{
-			printf("%s", line);
-			free(line);
-		}
-		i++;
-	}
+    // Ouvrir le fichier en lecture
+    fd = open("files/alternate_line_nl_with_nl", O_RDONLY);
+    if (fd == -1)
+    {
+        perror("Error opening file");
+        return (1);
+    }
 
-	close(fd);
+    // Lire et afficher chaque ligne du fichier
+    line = get_next_line(fd);
+    printf("[%s] \n", line);
+    free(line); // Libérer la mémoire allouée par get_next_line
+    line = get_next_line(fd);
+    printf("[%s] \n", line);
+    free(line); // Libérer la mémoire allouée par get_next_line
+    line = get_next_line(fd);
+    printf("[%s] \n", line);
+    free(line); // Libérer la mémoire allouée par get_next_line
+    line = get_next_line(fd);
+    printf("[%s] \n", line);
+    free(line); // Libérer la mémoire allouée par get_next_line
+	line = get_next_line(fd);
+    printf("[%s] \n", line);
+    free(line); // Libérer la mémoire allouée par get_next_line
+	line = get_next_line(fd);
+    printf("[%s] \n", line);
+    free(line); // Libérer la mémoire allouée par get_next_line
+	line = get_next_line(fd);
+    printf("[%s] \n", line);
+    free(line);
+	line = get_next_line(fd);
+    printf("[%s] \n", line);
+    free(line);
+	line = get_next_line(fd);
+    printf("[%s] \n", line);
+    free(line);
+	line = get_next_line(fd);
+    printf("[%s] \n", line);
+    free(line);
+    close(fd);
+
+    return (0);
 }
-
 */
