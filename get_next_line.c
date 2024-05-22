@@ -96,7 +96,7 @@ char	*monitoring(char **stash, int nb_read)
 	{
 		final_result = give_me_this_line(*stash, 1);
 		if (!final_result)
-			return (NULL);
+			return ((void *)-1);
 		return (final_result);
 	}
 	else if (nb_read < BUFFER_SIZE && check_stash(*stash))
@@ -128,20 +128,47 @@ char	*get_next_line(int fd)
 	{
 		buff = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 		if (!buff)
+		{
+			if (result)
+			{
+				free(result);
+			}
 			return (NULL);
+		}
 		nb_read = read(fd, buff, BUFFER_SIZE);
 		if (nb_read == -1 || (nb_read == 0 && !result))
-			return (free(buff), NULL);
+			return (free(buff), free(result), NULL);
 		result = ft_strjoin(result, buff);
 		if (!result)
 			return (NULL);
 		final_result = monitoring(&result, nb_read);
-		if (final_result != NULL)
+		if (final_result == (void *)-1)
+			return (NULL);
+		else if (final_result != NULL)
 			return (final_result);
 	}
 	return (NULL);
 }
 
+/*
+#include <fcntl.h>
+int main()
+{
+	int fd;
+	char *line;
+
+	fd= open("testmouss", O_RDONLY);
+	int i= 0;
+	while(i < 4)
+	{
+		line = get_next_line(fd);
+		printf("%s", line);
+		free(line);
+		i++;
+	}
+
+}
+*/
 /*
 #include <fcntl.h>
 int    main(void)
@@ -159,33 +186,53 @@ int    main(void)
 
     // Lire et afficher chaque ligne du fichier
     line = get_next_line(fd);
+	if (!line)
+		return 0;
     printf("[%s] \n", line);
     free(line); // Libérer la mémoire allouée par get_next_line
     line = get_next_line(fd);
+	if (!line)	
+		return 0;
     printf("[%s] \n", line);
     free(line); // Libérer la mémoire allouée par get_next_line
     line = get_next_line(fd);
+	if (!line)
+		return 0;
     printf("[%s] \n", line);
     free(line); // Libérer la mémoire allouée par get_next_line
     line = get_next_line(fd);
+	if (!line)
+		return 0;
     printf("[%s] \n", line);
     free(line); // Libérer la mémoire allouée par get_next_line
 	line = get_next_line(fd);
+	if (!line)
+		return 0;
     printf("[%s] \n", line);
     free(line); // Libérer la mémoire allouée par get_next_line
 	line = get_next_line(fd);
+	if (!line)
+		return 0;
     printf("[%s] \n", line);
     free(line); // Libérer la mémoire allouée par get_next_line
 	line = get_next_line(fd);
+	if (!line)
+		return 0;
     printf("[%s] \n", line);
     free(line);
 	line = get_next_line(fd);
+	if (!line)
+		return 0;
     printf("[%s] \n", line);
     free(line);
 	line = get_next_line(fd);
+	if (!line)
+		return 0;
     printf("[%s] \n", line);
     free(line);
 	line = get_next_line(fd);
+	if (!line)
+		return 0;
     printf("[%s] \n", line);
     free(line);
     close(fd);

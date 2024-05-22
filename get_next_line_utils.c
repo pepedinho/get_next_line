@@ -51,10 +51,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 
 	result = malloc(sizeof(char) * (ft_strlen(s1) + (ft_strlen(s2) +1)));
 	if (!result)
-	{
-		free((char *)s2);
-		return (NULL);
-	}
+		return (free((char *)s1), free((char *)s2), NULL);
 	index.i = 0;
 	index.j = 0;
 	if (s1)
@@ -69,6 +66,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 		result[index.i++] = s2[index.j++];
 	result[index.i] = '\0';
 	free((char *)s1);
+	s1 = NULL;
 	free((char *)s2);
 	return (result);
 }
@@ -79,7 +77,7 @@ void	*ft_calloc(size_t nmeb, size_t size)
 	size_t	i;
 
 	ptr = malloc(size * nmeb);
-	if (ptr == NULL)
+	if (!ptr)
 		return (NULL);
 	if (nmeb == 0 || size == 0)
 		return (NULL);
@@ -94,8 +92,14 @@ void	*ft_calloc(size_t nmeb, size_t size)
 
 void	free_this(char *result, char *buff)
 {
-	free(result);
-	result = NULL;
-	free(buff);
-	buff = NULL;
+	if (result)
+	{
+		free(result);
+		result = NULL;
+	}
+	else if (buff)
+	{
+		free(buff);
+		buff = NULL;
+	}	
 }
