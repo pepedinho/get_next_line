@@ -21,7 +21,9 @@ typedef struct s_index
 	size_t	i;
 	size_t	j;
 }		t_index;
-
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 512
+#endif
 int		ft_strlen(const char *str);
 char	*ft_strndup(const char *source, int n);
 char	*ft_strjoin(char const *s1, char const *s2);

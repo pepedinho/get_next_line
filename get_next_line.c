@@ -30,7 +30,7 @@ int	check_stash(char *stash)
 
 /*
 	retourne la chaine stash couper au premier '\n' 
-	et stock le reste de stash au debut de stash
+	et replace le reste de stash au debut de cette derniere
 */
 char	*format_stash(char *stash)
 {
@@ -61,6 +61,14 @@ char	*format_stash(char *stash)
 	return (result);
 }
 
+/*
+	fonction d'appel de formatage toujours selon le cas
+	cas 1 = appeler format_stash et free la stash en cas d'echecs.
+	cas 2 = appeler format_stash et free line si il s'agit d'une chaine vide
+				ce qui signifie que la stash etait vide;
+				(je ne free pas la stash car je la free dans la fonction precedente)
+*/
+
 char	*give_me_this_line(char *stash, int cases)
 {
 	char	*line;
@@ -79,7 +87,7 @@ char	*give_me_this_line(char *stash, int cases)
 	else
 	{
 		line = format_stash(stash);
-		if (!line || !line[0])
+		if (!line[0])
 		{
 			free(line);
 			return (NULL);
@@ -87,6 +95,19 @@ char	*give_me_this_line(char *stash, int cases)
 		return (line);
 	}
 }
+
+/*
+ fonction de monitoring verification de l'etat de la stash 
+ cas 1 = BUFFER_SIZE caractere a ete lus et un \n dans la stash 
+			|
+			-->envoyer la stash a la fonction de formatage.
+
+ cas 2 = nombre de caracter lus < BUFFER_SIZE donc fin du fichier
+			|
+			--> envoyer la stash a la fonction de formatage.
+					|
+					--> free la stash.
+*/
 
 char	*monitoring(char **stash, int nb_read)
 {
@@ -99,11 +120,6 @@ char	*monitoring(char **stash, int nb_read)
 			return ((void *)-1);
 		return (final_result);
 	}
-	else if (nb_read < BUFFER_SIZE && check_stash(*stash))
-	{
-		final_result = give_me_this_line(*stash, 1);
-		return (final_result);
-	}
 	else if (nb_read < BUFFER_SIZE && !check_stash(*stash))
 	{
 		final_result = give_me_this_line(*stash, 2);
@@ -114,6 +130,11 @@ char	*monitoring(char **stash, int nb_read)
 	return (NULL);
 }
 
+/*
+ fonction principal lecture du fichier allocation du buffer 
+ et realocation de la stash (result) via strjoin modifier
+*/
+
 char	*get_next_line(int fd)
 {
 	static char		*result;
@@ -121,10 +142,8 @@ char	*get_next_line(int fd)
 	char			*buff;
 	int				nb_read;
 
-	if (fd < 0)
-		return (NULL);
 	nb_read = -1;
-	while (nb_read != 0)
+	while (nb_read != 0 && fd >= 0)
 	{
 		buff = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 		if (!buff)
@@ -143,6 +162,7 @@ char	*get_next_line(int fd)
 	}
 	return (NULL);
 }
+
 /*
 #include <fcntl.h>
 int main()
@@ -150,9 +170,9 @@ int main()
 	int fd;
 	char *line;
 
-	fd= open("testmouss", O_RDONLY);
+	fd= open("read_error.txt", O_RDONLY);
 	int i= 0;
-	while(i < 4)
+	while(i < 5)
 	{
 		line = get_next_line(fd);
 		printf("%s", line);

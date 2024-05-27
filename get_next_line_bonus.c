@@ -121,10 +121,8 @@ char	*get_next_line(int fd)
 	char			*buff;
 	int				nb_read;
 
-	if (fd < 0)
-		return (NULL);
 	nb_read = -1;
-	while (nb_read != 0)
+	while (nb_read != 0 && fd >= 0)
 	{
 		buff = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 		if (!buff)
