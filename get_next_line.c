@@ -150,7 +150,7 @@ char	*get_next_line(int fd)
 			return (NULL);
 		nb_read = read(fd, buff, BUFFER_SIZE);
 		if (nb_read == -1 || (nb_read == 0 && !result))
-			return (free(buff), free(result), NULL);
+			return (free_this(buff, result), result = NULL, NULL);
 		result = ft_strjoin(result, buff);
 		if (!result)
 			return (NULL);
@@ -162,15 +162,25 @@ char	*get_next_line(int fd)
 	}
 	return (NULL);
 }
-
 /*
 #include <fcntl.h>
 int main()
 {
 	int fd;
 	char *line;
-
 	fd= open("read_error.txt", O_RDONLY);
+
+	line = get_next_line(fd);
+		printf("%s", line);
+		free(line);
+	line = get_next_line(fd);
+		printf("%s", line);
+		free(line);
+	line = get_next_line(10);
+		printf("%s", line);
+		free(line);
+	close(fd);
+	fd = open("read_error.txt", O_RDONLY);
 	int i= 0;
 	while(i < 5)
 	{

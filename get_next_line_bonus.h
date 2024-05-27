@@ -15,7 +15,11 @@
 
 # include <stdlib.h>
 # include <unistd.h>
-//# define BUFFER_SIZE 10000000
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 512
+# endif
+
 typedef struct s_index
 {
 	size_t	i;

@@ -99,11 +99,6 @@ char	*monitoring(char **stash, int nb_read)
 			return ((void *)-1);
 		return (final_result);
 	}
-	else if (nb_read < BUFFER_SIZE && check_stash(*stash))
-	{
-		final_result = give_me_this_line(*stash, 1);
-		return (final_result);
-	}
 	else if (nb_read < BUFFER_SIZE && !check_stash(*stash))
 	{
 		final_result = give_me_this_line(*stash, 2);
@@ -129,7 +124,7 @@ char	*get_next_line(int fd)
 			return (NULL);
 		nb_read = read(fd, buff, BUFFER_SIZE);
 		if (nb_read == -1 || (nb_read == 0 && !result[fd]))
-			return (free(buff), free(result[fd]), NULL);
+			return (free_this(buff, result[fd]), result[fd] = NULL, NULL);
 		result[fd] = ft_strjoin(result[fd], buff);
 		if (!result[fd])
 			return (NULL);
@@ -144,6 +139,37 @@ char	*get_next_line(int fd)
 
 /*
 #include <fcntl.h>
+int main()
+{
+	int fd;
+	char *line;
+	fd= open("read_error.txt", O_RDONLY);
+
+	line = get_next_line(fd);
+		printf("%s", line);
+		free(line);
+	line = get_next_line(fd);
+		printf("%s", line);
+		free(line);
+	line = get_next_line(10);
+		printf("%s", line);
+		free(line);
+	close(fd);
+	fd = open("read_error.txt", O_RDONLY);
+	int i= 0;
+	while(i < 5)
+	{
+		line = get_next_line(fd);
+		printf("%s", line);
+		free(line);
+		i++;
+	}
+	line = get_next_line(10);
+		printf("%s", line);
+		free(line);
+}
+*/
+/*
 int    main(void)
 {
     int fd;
