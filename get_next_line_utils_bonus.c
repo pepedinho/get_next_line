@@ -94,8 +94,14 @@ void	*ft_calloc(size_t nmeb, size_t size)
 
 void	free_this(char *result, char *buff)
 {
-	free(result);
-	result = NULL;
-	free(buff);
-	buff = NULL;
+	if (result)
+	{
+		free(result);
+		result = NULL;
+	}
+	else
+	{
+		free(buff);
+		buff = NULL;
+	}
 }

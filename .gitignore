@@ -2,4 +2,5 @@
 build/
 tests/
 tests_bonus/
+gnlTester/
 a.out

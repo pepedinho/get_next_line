@@ -51,7 +51,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 
 	result = malloc(sizeof(char) * (ft_strlen(s1) + (ft_strlen(s2) +1)));
 	if (!result)
-		return (free((char *)s1), free((char *)s2), NULL);
+		return (free_this((char *)s1, (char *)s2), NULL);
 	index.i = 0;
 	index.j = 0;
 	if (s1)
@@ -65,9 +65,7 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	while (index.j < BUFFER_SIZE && s2[index.j])
 		result[index.i++] = s2[index.j++];
 	result[index.i] = '\0';
-	free((char *)s1);
-	s1 = NULL;
-	free((char *)s2);
+	free_this((char *)s1, (char *)s2);
 	return (result);
 }
 
@@ -97,7 +95,7 @@ void	free_this(char *result, char *buff)
 		free(result);
 		result = NULL;
 	}
-	else if (buff)
+	if (buff)
 	{
 		free(buff);
 		buff = NULL;

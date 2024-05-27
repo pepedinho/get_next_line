@@ -19,7 +19,7 @@ int	check_stash(char *stash)
 	size_t	i;
 
 	i = 0;
-	while (stash[i] && stash)
+	while (stash && stash[i])
 	{
 		if (stash[i] == '\n')
 			return (1);
@@ -128,13 +128,7 @@ char	*get_next_line(int fd)
 	{
 		buff = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
 		if (!buff)
-		{
-			if (result)
-			{
-				free(result);
-			}
 			return (NULL);
-		}
 		nb_read = read(fd, buff, BUFFER_SIZE);
 		if (nb_read == -1 || (nb_read == 0 && !result))
 			return (free(buff), free(result), NULL);
@@ -149,7 +143,6 @@ char	*get_next_line(int fd)
 	}
 	return (NULL);
 }
-
 /*
 #include <fcntl.h>
 int main()

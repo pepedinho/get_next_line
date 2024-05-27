@@ -96,7 +96,7 @@ char	*monitoring(char **stash, int nb_read)
 	{
 		final_result = give_me_this_line(*stash, 1);
 		if (!final_result)
-			return (NULL);
+			return ((void *)-1);
 		return (final_result);
 	}
 	else if (nb_read < BUFFER_SIZE && check_stash(*stash))
@@ -131,11 +131,13 @@ char	*get_next_line(int fd)
 			return (NULL);
 		nb_read = read(fd, buff, BUFFER_SIZE);
 		if (nb_read == -1 || (nb_read == 0 && !result[fd]))
-			return (free(buff), NULL);
+			return (free(buff), free(result[fd]), NULL);
 		result[fd] = ft_strjoin(result[fd], buff);
 		if (!result[fd])
 			return (NULL);
 		final_result = monitoring(&result[fd], nb_read);
+		if (final_result == (void *)-1)
+			return (NULL);
 		if (final_result != NULL)
 			return (final_result);
 	}
